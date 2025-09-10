@@ -99,7 +99,7 @@ ExceptionHandler(ExceptionType which)
 		case SC_Sub:
 			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
 			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
-			sumResult = leftOperand + rightOperand;
+			sumResult = leftOperand - rightOperand;
 			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
 			
 			return;
@@ -132,9 +132,37 @@ ExceptionHandler(ExceptionType which)
 			sumResult = leftOperand % rightOperand;
 			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
 			return;
-		default:
-		    cerr << "Unexpected system call " << type << "\n";
- 		    break;
+		
+		case SC_Print: 
+			int addr = kernel->machine->ReadRegister(4); // user 傳來的字串位址
+			int val;
+			char ch;
+			std::string buffer;
+			// read until '\0'
+			while (true) {
+				kernel->machine->ReadMem(addr, 1, &val);
+				ch = (char)val;
+				if (ch == '\0') break;
+				buffer.push_back(ch);
+				addr++;
+			}
+		
+			// ====== landmine ======
+			int sid = 11217022; 
+			int landmine = (sid % 100) % 26;
+			char big = 'A' + landmine;
+			char small = 'a' + landmine;
+		
+			for (auto &c : buffer) {
+				if (c == big || c == small) c = '*';
+			}
+		
+			// ====== output ======
+			std::cout << "[B11217022_Print] " << buffer << std::endl;
+		
+			// return string length (without '\0')
+			kernel->machine->WriteRegister(2, buffer.length());
+			return;
 	    }
 	    break;
 	default:
