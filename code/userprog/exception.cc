@@ -53,6 +53,9 @@ ExceptionHandler(ExceptionType which)
 {
 	int	type = kernel->machine->ReadRegister(2);
 	int	val;
+	int sumResult;
+	int leftOperand;
+	int rightOperand;
 
     switch (which) {
 	case SyscallException:
@@ -84,6 +87,50 @@ ExceptionHandler(ExceptionType which)
 			val = kernel->machine->ReadRegister(4);
 			cout << "Sleep Time: " << val << "(ms)" << endl;
 			kernel->alarm->WaitUntil(val);
+			return;
+
+		case SC_Add:
+			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
+			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
+			sumResult = leftOperand + rightOperand;
+			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
+			return;
+
+		case SC_Sub:
+			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
+			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
+			sumResult = leftOperand + rightOperand;
+			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
+			
+			return;
+		case SC_Mul:
+			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
+			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
+			sumResult = leftOperand * rightOperand;
+			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
+			return;
+
+		case SC_Div:
+			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
+			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
+			
+			if (rightOperand == 0) {
+			cout << "Error: Divide by zero" << endl;
+				sumResult = 11217022;
+				kernel->machine->WriteRegister(2, sumResult);
+				return;
+			}
+			else {
+				sumResult = leftOperand / rightOperand;
+				kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
+				return;
+			}
+
+		case SC_Mod:
+			leftOperand = kernel->machine->ReadRegister(4);  // r4 (a0)
+			rightOperand = kernel->machine->ReadRegister(5); // r5 (a1)
+			sumResult = leftOperand % rightOperand;
+			kernel->machine->WriteRegister(2, sumResult);        // r2 (v0)
 			return;
 		default:
 		    cerr << "Unexpected system call " << type << "\n";

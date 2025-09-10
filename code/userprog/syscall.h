@@ -31,6 +31,11 @@
 #define SC_ThreadYield	10
 #define SC_PrintInt	11
 #define SC_Sleep	12
+#define SC_Add	13
+#define SC_Sub	14
+#define SC_Mul	15
+#define SC_Div	16
+#define SC_Mod	17
 
 #ifndef IN_ASM
 
@@ -130,6 +135,14 @@ void ThreadYield();
 
 void PrintInt(int number);	//my System Call
 void sleep(int msec);
+
+int Add(int a, int b);
+int Sub(int a, int b);
+int Mul(int a, int b);
+int Div(int a, int b);
+int Mod(int a, int b);
+
+
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */
